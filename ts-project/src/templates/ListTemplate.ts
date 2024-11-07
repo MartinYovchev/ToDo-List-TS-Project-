@@ -1,51 +1,41 @@
 import FullList from "../model/FullList"
 
-interface DOMList{
+interface DOMList {
     ul: HTMLUListElement,
     clear(): void,
-    render(fullList: FullList): void
+    render(fullList: FullList): void,
 }
 
-export default class DOMListClass implements DOMList{
+export default class ListTemplate implements DOMList {
 
-    static instance: DOMListClass = new DOMListClass();
-    static ulFromHTML = document.getElementById("listItems") as HTMLUListElement
+    ul: HTMLUListElement
 
-    constructor(private _ul: HTMLUListElement = DOMListClass.ulFromHTML){}
+    static instance: ListTemplate = new ListTemplate()
 
-    get ul(): HTMLUListElement{
-        return this._ul
-    }
-
-    set ul(ul: HTMLUListElement){
-        this._ul = ul
+    private constructor() {
+        this.ul = document.getElementById("listItems") as HTMLUListElement
     }
 
     clear(): void {
-        if(this._ul){
-            this._ul.innerHTML = ""
-        }
+        this.ul.innerHTML = ''
     }
 
     render(fullList: FullList): void {
-        
         this.clear()
 
         fullList.list.forEach(item => {
-            
             const li = document.createElement("li") as HTMLLIElement
             li.className = "item"
+
             const check = document.createElement("input") as HTMLInputElement
             check.type = "checkbox"
             check.id = item.id
-            check.tabIndex = 0
             check.checked = item.checked
             li.append(check)
 
-            check.addEventListener("change", () =>{
+            check.addEventListener('change', () => {
                 item.checked = !item.checked
                 fullList.save()
-
             })
 
             const label = document.createElement("label") as HTMLLabelElement
@@ -54,17 +44,16 @@ export default class DOMListClass implements DOMList{
             li.append(label)
 
             const button = document.createElement("button") as HTMLButtonElement
-            button.className = "button"
-            button.textContent = "X"
+            button.className = 'button'
+            button.textContent = 'X'
             li.append(button)
 
-            button.addEventListener("click", () =>{
+            button.addEventListener('click', () => {
                 fullList.removeItem(item.id)
                 this.render(fullList)
             })
 
-            this._ul.append(li)
-        });
-
+            this.ul.append(li)
+        })
     }
 }
